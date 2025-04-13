@@ -92,7 +92,7 @@ export const DirectMessages = () => {
   const selectedUser = users.find(user => user.id === selectedUserId);
   
   return (
-    <div className="flex h-[calc(100vh-80px)] min-w-sm max-w-[95vw] mx-auto border rounded-xl overflow-hidden shadow-lg">
+    <div className="flex h-[calc(100vh-80px)] min-w-lg max-w-[95vw] mx-auto border rounded-xl overflow-hidden shadow-lg">
       <div className="w-[220px] min-w-[220px] border-r bg-gray-50">
         <div className="p-4 border-b bg-white">
           <h2 className="text-xl font-bold text-gray-800">Messages</h2>
