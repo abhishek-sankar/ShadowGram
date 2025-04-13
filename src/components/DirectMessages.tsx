@@ -1,14 +1,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { User, Message } from '@/types';
-import { getChatUsers, getConversation, sendMessage } from '@/services/chatService';
+import { getChatUsers, getConversation, sendMessage, getMayaResponse } from '@/services/chatService';
 import { useAppContext } from '@/contexts/AppContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Send, User as UserIcon, Loader2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const DirectMessages = () => {
@@ -18,7 +17,7 @@ export const DirectMessages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [isGeneratingResponse, setIsGeneratingResponse] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Load chat users
@@ -53,69 +52,37 @@ export const DirectMessages = () => {
     setIsLoading(true);
     
     try {
-      const selectedUser = users.find(user => user.id === selectedUserId);
-      
-      // Regular message sending for all users
+      // Send user message
       await sendMessage(selectedUserId, newMessage);
-      setNewMessage('');
-      
-      // Get updated conversation
       const updatedConversation = getConversation(selectedUserId);
       setMessages(updatedConversation);
+      setNewMessage('');
       
-      // If it's Maya, we also want to use the special LlamaIndex agent
-      if (selectedUser?.name === 'Maya Chen') {
-        setIsGeneratingImage(true);
+      // If it's Maya, get AI response
+      if (selectedUserId === '2') {
+        setIsGeneratingResponse(true);
         toast.info("Maya is thinking...");
         
         try {
-          // Call the Maya agent edge function with the message and conversation history
-          const { data, error } = await supabase.functions.invoke('maya-agent', {
-            body: { 
-              message: newMessage,
-              conversation: updatedConversation.slice(-10) // Send the last 10 messages for context
-            }
-          });
+          // Get Maya's response using the Maya agent
+          const mayaResponse = await getMayaResponse(newMessage, updatedConversation);
           
-          if (error) {
-            console.error('Error calling Maya agent:', error);
-            toast.error("Sorry, Maya is unavailable right now");
-          } else if (data?.message) {
-            // Get a unique ID for the message
-            const messageId = `maya-${Date.now()}`;
-            
-            // Create a message object for Maya's text response
-            const mayaResponse: Message = {
-              id: messageId,
-              senderId: selectedUserId,
-              receiverId: currentUser.id,
-              content: data.message,
-              createdAt: new Date().toISOString(),
-              isRead: true,
-              image: data.image // May be null if no image
-            };
-            
-            // Add Maya's enhanced response to the conversation
-            const conversationKey = selectedUserId === '2' 
-              ? 'maya-convo' 
-              : `${selectedUserId}-convo`;
-            
-            // Update the messages in the mock conversation store
-            const mockConversations = (window as any).mockConversations || {};
-            if (!mockConversations[conversationKey]) {
-              mockConversations[conversationKey] = [];
-            }
-            mockConversations[conversationKey].push(mayaResponse);
-            (window as any).mockConversations = mockConversations;
-            
-            // Update the UI with the new message
-            setMessages(prev => [...prev, mayaResponse]);
+          // Add Maya's response to the conversation
+          const conversationKey = 'maya-convo';
+          const mockConversations = (window as any).mockConversations || {};
+          if (!mockConversations[conversationKey]) {
+            mockConversations[conversationKey] = [];
           }
+          mockConversations[conversationKey].push(mayaResponse);
+          (window as any).mockConversations = mockConversations;
+          
+          // Update UI with the new message
+          setMessages(prev => [...prev, mayaResponse]);
         } catch (error) {
           console.error('Error with Maya agent:', error);
           toast.error("Something went wrong with Maya's response");
         } finally {
-          setIsGeneratingImage(false);
+          setIsGeneratingResponse(false);
         }
       }
     } catch (error) {
@@ -241,7 +208,7 @@ export const DirectMessages = () => {
                       </div>
                     </div>
                   ))}
-                  {isGeneratingImage && (
+                  {isGeneratingResponse && (
                     <div className="flex justify-start">
                       <div className="bg-white border rounded-xl p-4 shadow-sm flex items-center space-x-2">
                         <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
@@ -260,13 +227,13 @@ export const DirectMessages = () => {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type a message..."
-                disabled={isLoading || isGeneratingImage}
+                disabled={isLoading || isGeneratingResponse}
                 className="flex-1 h-14 text-base px-4"
               />
               <Button 
                 type="submit" 
                 size="lg" 
-                disabled={isLoading || isGeneratingImage} 
+                disabled={isLoading || isGeneratingResponse} 
                 className="px-8 h-14 text-base"
               >
                 {isLoading ? (

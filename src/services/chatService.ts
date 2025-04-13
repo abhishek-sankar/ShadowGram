@@ -81,36 +81,43 @@ export const sendMessage = async (
   
   mockConversations[conversationKey].push(newMessage);
   
-  // If receiving user is AI, generate a response
-  if (mockUsers.find(user => user.id === receiverId)?.isAI) {
-    try {
-      // Call the Supabase edge function to get AI response
-      const { data, error } = await supabase.functions.invoke('generate-chat-message', {
-        body: { 
-          message: content,
-          persona: mockUsers.find(user => user.id === receiverId)?.name || ''
-        }
-      });
-      
-      if (error) {
-        console.error('Error generating AI response:', error);
-      } else if (data?.message) {
-        // Add AI response to conversation
-        const aiResponse: Message = {
-          id: uuidv4(),
-          senderId: receiverId,
-          receiverId: '1', // Current user
-          content: data.message,
-          createdAt: new Date().toISOString(),
-          isRead: true,
-        };
-        
-        mockConversations[conversationKey].push(aiResponse);
-      }
-    } catch (error) {
-      console.error('Error calling AI service:', error);
-    }
-  }
+  // Note: The actual Maya agent response is handled in the DirectMessages component
+  // to better manage the UI state during the response generation
   
   return newMessage;
+};
+
+// This function makes global mock conversations accessible for the Maya agent
+(window as any).mockConversations = mockConversations;
+
+// Get the Maya agent response
+export const getMayaResponse = async (message: string, conversation: Message[]): Promise<Message> => {
+  try {
+    const { data, error } = await supabase.functions.invoke('maya-agent', {
+      body: { 
+        message,
+        conversation: conversation.slice(-10) // Send the last 10 messages for context
+      }
+    });
+    
+    if (error) {
+      console.error('Error calling Maya agent:', error);
+      throw error;
+    }
+    
+    const mayaResponse: Message = {
+      id: uuidv4(),
+      senderId: '2', // Maya's ID
+      receiverId: '1', // Current user
+      content: data?.message || "Sorry, I couldn't generate a response right now.",
+      createdAt: new Date().toISOString(),
+      isRead: true,
+      image: data?.image // May be null if no image
+    };
+    
+    return mayaResponse;
+  } catch (error) {
+    console.error('Error with Maya agent:', error);
+    throw error;
+  }
 };
