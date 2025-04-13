@@ -206,7 +206,7 @@ export const DirectMessages = () => {
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type a message..."
                 disabled={isLoading || isGeneratingResponse}
-                className="flex-1 h-14 min-w-20 text-sm px-4 w-full"
+                className="flex-1 h-14 min-w-sm text-sm px-4 w-full"
               />
               <Button 
                 type="submit" 
