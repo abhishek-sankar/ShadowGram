@@ -104,29 +104,29 @@ export const DirectMessages = () => {
   const selectedUser = users.find(user => user.id === selectedUserId);
   
   return (
-    <div className="flex h-[calc(100vh-100px)] w-full max-w-7xl mx-auto border rounded-xl overflow-hidden shadow-lg">
+    <div className="flex h-[calc(100vh-80px)] w-full max-w-[95vw] mx-auto border rounded-xl overflow-hidden shadow-lg">
       {/* Users sidebar */}
-      <div className="w-1/4 min-w-[250px] border-r bg-gray-50">
-        <div className="p-5 border-b bg-white">
-          <h2 className="text-2xl font-bold text-gray-800">Messages</h2>
+      <div className="w-[220px] min-w-[220px] border-r bg-gray-50">
+        <div className="p-4 border-b bg-white">
+          <h2 className="text-xl font-bold text-gray-800">Messages</h2>
         </div>
-        <ScrollArea className="h-[calc(100vh-180px)]">
-          <div className="p-3">
+        <ScrollArea className="h-[calc(100vh-140px)]">
+          <div className="p-2">
             {users.map(user => (
               <div
                 key={user.id}
-                className={`flex items-center gap-4 p-4 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${
+                className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${
                   selectedUserId === user.id ? 'bg-gray-100 shadow-sm' : ''
                 }`}
                 onClick={() => setSelectedUserId(user.id)}
               >
-                <Avatar className="w-14 h-14">
+                <Avatar className="w-12 h-12">
                   <AvatarImage src={user.profileImage} alt={user.name} />
                   <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-base font-semibold text-gray-800 truncate">{user.name}</p>
-                  <p className="text-sm text-gray-500 truncate">
+                  <p className="text-sm font-semibold text-gray-800 truncate">{user.name}</p>
+                  <p className="text-xs text-gray-500 truncate">
                     {user.isAI ? 'AI Assistant' : '@' + user.username}
                   </p>
                 </div>
@@ -141,29 +141,29 @@ export const DirectMessages = () => {
         {selectedUser ? (
           <>
             {/* Chat header */}
-            <div className="p-6 border-b flex items-center gap-4 bg-white shadow-sm">
-              <Avatar className="w-16 h-16">
+            <div className="p-4 border-b flex items-center gap-4 bg-white shadow-sm">
+              <Avatar className="w-12 h-12">
                 <AvatarImage src={selectedUser.profileImage} alt={selectedUser.name} />
                 <AvatarFallback>{getInitials(selectedUser.name)}</AvatarFallback>
               </Avatar>
               <div>
-                <h2 className="text-2xl font-bold text-gray-800">{selectedUser.name}</h2>
-                <p className="text-sm text-gray-500">
+                <h2 className="text-lg font-bold text-gray-800">{selectedUser.name}</h2>
+                <p className="text-xs text-gray-500">
                   {selectedUser.isAI ? 'AI Assistant' : '@' + selectedUser.username}
                 </p>
               </div>
             </div>
             
             {/* Messages */}
-            <ScrollArea className="flex-1 p-6">
+            <ScrollArea className="flex-1 p-4">
               {messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-gray-500">
                   <UserIcon className="h-16 w-16 mb-4 text-gray-300" />
-                  <p className="text-lg">No messages yet</p>
+                  <p className="text-base">No messages yet</p>
                   <p className="text-sm">Send a message to start the conversation</p>
                 </div>
               ) : (
-                <div className="space-y-8">
+                <div className="space-y-6">
                   {messages.map(message => (
                     <div
                       key={message.id}
@@ -174,14 +174,14 @@ export const DirectMessages = () => {
                       }`}
                     >
                       <div
-                        className={`max-w-[75%] rounded-xl p-5 shadow-sm ${
+                        className={`max-w-[75%] rounded-xl p-4 shadow-sm ${
                           message.senderId === currentUser.id
                             ? 'bg-blue-500 text-white'
                             : 'bg-white border'
                         }`}
                       >
                         {/* Message content */}
-                        <p className="text-base">{message.content}</p>
+                        <p className="text-sm">{message.content}</p>
                         
                         {/* Message image if present */}
                         {message.image && (
@@ -210,9 +210,9 @@ export const DirectMessages = () => {
                   ))}
                   {isGeneratingResponse && (
                     <div className="flex justify-start">
-                      <div className="bg-white border rounded-xl p-4 shadow-sm flex items-center space-x-2">
-                        <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
-                        <p className="text-sm text-gray-500">Maya is typing...</p>
+                      <div className="bg-white border rounded-xl p-3 shadow-sm flex items-center space-x-2">
+                        <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+                        <p className="text-xs text-gray-500">Maya is typing...</p>
                       </div>
                     </div>
                   )}
@@ -222,24 +222,24 @@ export const DirectMessages = () => {
             </ScrollArea>
             
             {/* Message input */}
-            <form onSubmit={handleSendMessage} className="p-6 border-t bg-white flex gap-4">
+            <form onSubmit={handleSendMessage} className="p-4 border-t bg-white flex gap-4">
               <Input
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type a message..."
                 disabled={isLoading || isGeneratingResponse}
-                className="flex-1 h-14 text-base px-4"
+                className="flex-1 h-12 text-sm px-4"
               />
               <Button 
                 type="submit" 
-                size="lg" 
+                size="sm" 
                 disabled={isLoading || isGeneratingResponse} 
-                className="px-8 h-14 text-base"
+                className="px-6 h-12"
               >
                 {isLoading ? (
-                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
                 ) : (
-                  <Send className="h-5 w-5 mr-2" />
+                  <Send className="h-4 w-4 mr-2" />
                 )}
                 Send
               </Button>
@@ -248,7 +248,7 @@ export const DirectMessages = () => {
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-gray-500">
             <UserIcon className="h-16 w-16 mb-4 text-gray-300" />
-            <p className="text-lg">Select a conversation</p>
+            <p className="text-base">Select a conversation</p>
           </div>
         )}
       </div>
