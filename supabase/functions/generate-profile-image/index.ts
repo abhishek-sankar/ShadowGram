@@ -41,6 +41,8 @@ serve(async (req) => {
     
     console.log(`Generating profile image with prompt: ${enhancedPrompt}`);
     
+    // Use Google's Imagen for profile pictures
+    const modelVersion = "af961a46f0fcb7254a90771ef675e9101c551771ddb78d3448167f3040b536ce";
     const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
       headers: {
@@ -48,17 +50,11 @@ serve(async (req) => {
         Authorization: `Token ${REPLICATE_API_KEY}`,
       },
       body: JSON.stringify({
-        version: "687458266007b196a490e79a77bae4b123c1792900e1cb730a51344887ad9832",
+        version: modelVersion,
         input: {
-          model: "dev",
           prompt: enhancedPrompt,
-          go_fast: false,
-          megapixels: "1",
-          num_outputs: 1,
           aspect_ratio: "1:1", // Square for profile images
-          output_format: "webp",
-          output_quality: 80,
-          num_inference_steps: 28
+          safety_filter_level: "block_medium_and_above"
         },
       }),
     });
@@ -84,7 +80,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           status: "success",
-          imageUrl: prediction.output[0] 
+          imageUrl: prediction.output
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );

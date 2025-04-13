@@ -1,3 +1,4 @@
+
 import { User, Post, Comment, Persona, SamplePost } from '@/types';
 
 export const mockUsers: User[] = [
@@ -11,7 +12,7 @@ export const mockUsers: User[] = [
   },
   {
     id: '2',
-    username: 'sustainable_maya',
+    username: 'mayachen',
     name: 'Maya Chen',
     profileImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80',
     bio: 'Environmental scientist turned sustainability influencer | Zero-waste advocate | Based in Portland',
@@ -19,7 +20,7 @@ export const mockUsers: User[] = [
   },
   {
     id: '3',
-    username: 'fitness_aiden',
+    username: 'aidenrodriguez',
     name: 'Aiden Rodriguez',
     profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80',
     bio: 'Former athlete, current fitness entrepreneur | Building my app & training program | Mental health advocate',
@@ -27,7 +28,7 @@ export const mockUsers: User[] = [
   },
   {
     id: '4',
-    username: 'culinary_eleanor',
+    username: 'eleanorwright',
     name: 'Eleanor Wright',
     profileImage: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=764&q=80',
     bio: 'Food writer & culinary anthropologist | Documenting traditional cooking techniques | World traveler',
@@ -35,7 +36,7 @@ export const mockUsers: User[] = [
   },
   {
     id: '5',
-    username: 'tech_jayden',
+    username: 'jaydenpark',
     name: 'Jayden Park',
     profileImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80',
     bio: 'Software engineer & digital artist | Exploring tech × creativity | AI art experimentalist',
@@ -43,7 +44,7 @@ export const mockUsers: User[] = [
   },
   {
     id: '6',
-    username: 'mindful_olivia',
+    username: 'oliviasantos',
     name: 'Olivia Santos',
     profileImage: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80',
     bio: 'Former corporate lawyer, now stationery business owner | Mindful mompreneur | Balancing work & family',
@@ -300,7 +301,7 @@ export const getRegularFeed = (): Post[] => {
 export const aiPersonas: Persona[] = [
   {
     name: 'Maya Chen',
-    username: 'sustainable_maya',
+    username: 'mayachen',
     bio: 'Environmental scientist turned sustainability influencer | Zero-waste advocate | Based in Portland',
     topics: ['sustainability', 'eco-friendly', 'zero-waste', 'environment', 'nature', 'climate'],
     style: 'casual',
@@ -334,7 +335,7 @@ export const aiPersonas: Persona[] = [
   },
   {
     name: 'Aiden Rodriguez',
-    username: 'fitness_aiden',
+    username: 'aidenrodriguez',
     bio: 'Former athlete, current fitness entrepreneur | Building my app & training program | Mental health advocate',
     topics: ['fitness', 'workout', 'health', 'entrepreneurship', 'mental health', 'nutrition'],
     style: 'professional',
@@ -368,7 +369,7 @@ export const aiPersonas: Persona[] = [
   },
   {
     name: 'Eleanor Wright',
-    username: 'culinary_eleanor',
+    username: 'eleanorwright',
     bio: 'Food writer & culinary anthropologist | Documenting traditional cooking techniques | World traveler',
     topics: ['food', 'cuisine', 'cooking', 'culinary', 'travel', 'culture', 'tradition'],
     style: 'professional',
@@ -402,7 +403,7 @@ export const aiPersonas: Persona[] = [
   },
   {
     name: 'Jayden Park',
-    username: 'tech_jayden',
+    username: 'jaydenpark',
     bio: 'Software engineer & digital artist | Exploring tech × creativity | AI art experimentalist',
     topics: ['technology', 'coding', 'art', 'design', 'AI', 'creative', 'innovation'],
     style: 'artistic',
@@ -436,7 +437,7 @@ export const aiPersonas: Persona[] = [
   },
   {
     name: 'Olivia Santos',
-    username: 'mindful_olivia',
+    username: 'oliviasantos',
     bio: 'Former corporate lawyer, now stationery business owner | Mindful mompreneur | Balancing work & family',
     topics: ['business', 'productivity', 'parenting', 'mindfulness', 'organization', 'family', 'work-life'],
     style: 'casual',

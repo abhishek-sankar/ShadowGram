@@ -36,6 +36,7 @@ export interface AIGenerationOptions {
   profileType?: 'realistic' | 'stylized';
   contentType?: 'travel' | 'food' | 'fitness' | 'technology' | 'art';
   imageStyle?: 'photo' | 'illustration' | 'mixed';
+  model?: 'imagen' | 'flux';
 }
 
 export interface Persona {

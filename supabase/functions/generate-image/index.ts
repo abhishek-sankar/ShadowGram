@@ -25,9 +25,9 @@ serve(async (req) => {
 
     const { prompt, type, category } = await req.json();
     
-    let model = "google/imagen-3";
+    // Always use Google's Imagen for image generation
+    const model = "google/imagen-3";
     let enhancedPrompt = prompt || "A beautiful photo";
-    let input: any = {};
     
     // Enhance the prompt based on the content category
     if (category === 'travel') {
@@ -44,32 +44,13 @@ serve(async (req) => {
     
     console.log(`Generating image with type: ${type}, category: ${category}, prompt: ${enhancedPrompt}`);
     
-    // Use Imagen for scenic/travel/nature photos
-    if (type === 'scenic' || category === 'travel' || category === 'nature') {
-      model = "google/imagen-3";
-      input = {
-        prompt: enhancedPrompt,
-        aspect_ratio: "4:3",
-        safety_filter_level: "block_medium_and_above"
-      };
-    } else {
-      // Use Flux for other types of images
-      model = "black-forest-labs/flux-schnell";
-      input = {
-        prompt: enhancedPrompt,
-        go_fast: true,
-        megapixels: "1",
-        num_outputs: 1,
-        aspect_ratio: "4:3",
-        output_format: "webp",
-        output_quality: 80,
-        num_inference_steps: 4
-      };
-    }
+    const input = {
+      prompt: enhancedPrompt,
+      aspect_ratio: "4:3",
+      safety_filter_level: "block_medium_and_above"
+    };
     
-    const modelVersion = model === "google/imagen-3" 
-      ? "af961a46f0fcb7254a90771ef675e9101c551771ddb78d3448167f3040b536ce" 
-      : "9eeefd04f121a8c8073abb6c336a970f25548c3df0622dd8c9b491b3ca6a4c68";
+    const modelVersion = "af961a46f0fcb7254a90771ef675e9101c551771ddb78d3448167f3040b536ce";
     
     const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
@@ -104,7 +85,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           status: "success",
-          imageUrl: model === "google/imagen-3" ? prediction.output : prediction.output[0]
+          imageUrl: prediction.output
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
