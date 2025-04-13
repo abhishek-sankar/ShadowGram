@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { FeedType } from '@/types';
 import { useAppContext } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 
 interface LayoutProps {
   children: React.ReactNode;

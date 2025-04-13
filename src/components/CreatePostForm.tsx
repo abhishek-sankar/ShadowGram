@@ -4,7 +4,7 @@ import { Image, X } from 'lucide-react';
 import { useAppContext } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';  // Use the sonner library directly
 
 export const CreatePostForm: React.FC = () => {
   const { currentUser, addPost } = useAppContext();
