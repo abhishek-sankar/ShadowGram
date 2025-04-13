@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { User, Message } from '@/types';
 import { getChatUsers, getConversation, sendMessage, getMayaResponse } from '@/services/chatService';
@@ -20,18 +19,15 @@ export const DirectMessages = () => {
   const [isGeneratingResponse, setIsGeneratingResponse] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
-  // Load chat users
   useEffect(() => {
     const chatUsers = getChatUsers();
     setUsers(chatUsers);
     
-    // Select first user by default
     if (chatUsers.length > 0 && !selectedUserId) {
       setSelectedUserId(chatUsers[0].id);
     }
   }, []);
   
-  // Load conversation when selected user changes
   useEffect(() => {
     if (selectedUserId) {
       const conversation = getConversation(selectedUserId);
@@ -39,7 +35,6 @@ export const DirectMessages = () => {
     }
   }, [selectedUserId]);
   
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -52,22 +47,17 @@ export const DirectMessages = () => {
     setIsLoading(true);
     
     try {
-      // Send user message
       await sendMessage(selectedUserId, newMessage);
       const updatedConversation = getConversation(selectedUserId);
       setMessages(updatedConversation);
       setNewMessage('');
       
-      // If it's Maya, get AI response
       if (selectedUserId === '2') {
         setIsGeneratingResponse(true);
         toast.info("Maya is thinking...");
         
         try {
-          // Get Maya's response using the Maya agent
           const mayaResponse = await getMayaResponse(newMessage, updatedConversation);
-          
-          // Add Maya's response to the conversation
           const conversationKey = 'maya-convo';
           const mockConversations = (window as any).mockConversations || {};
           if (!mockConversations[conversationKey]) {
@@ -75,8 +65,6 @@ export const DirectMessages = () => {
           }
           mockConversations[conversationKey].push(mayaResponse);
           (window as any).mockConversations = mockConversations;
-          
-          // Update UI with the new message
           setMessages(prev => [...prev, mayaResponse]);
         } catch (error) {
           console.error('Error with Maya agent:', error);
@@ -105,7 +93,6 @@ export const DirectMessages = () => {
   
   return (
     <div className="flex h-[calc(100vh-80px)] w-full max-w-[95vw] mx-auto border rounded-xl overflow-hidden shadow-lg">
-      {/* Users sidebar */}
       <div className="w-[220px] min-w-[220px] border-r bg-gray-50">
         <div className="p-4 border-b bg-white">
           <h2 className="text-xl font-bold text-gray-800">Messages</h2>
@@ -136,11 +123,9 @@ export const DirectMessages = () => {
         </ScrollArea>
       </div>
       
-      {/* Chat area */}
       <div className="flex-1 flex flex-col bg-gray-50">
         {selectedUser ? (
           <>
-            {/* Chat header */}
             <div className="p-4 border-b flex items-center gap-4 bg-white shadow-sm">
               <Avatar className="w-12 h-12">
                 <AvatarImage src={selectedUser.profileImage} alt={selectedUser.name} />
@@ -154,7 +139,6 @@ export const DirectMessages = () => {
               </div>
             </div>
             
-            {/* Messages */}
             <ScrollArea className="flex-1 p-4">
               {messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-gray-500">
@@ -180,10 +164,7 @@ export const DirectMessages = () => {
                             : 'bg-white border'
                         }`}
                       >
-                        {/* Message content */}
                         <p className="text-sm">{message.content}</p>
-                        
-                        {/* Message image if present */}
                         {message.image && (
                           <div className="mt-3 rounded-lg overflow-hidden">
                             <img 
@@ -193,8 +174,6 @@ export const DirectMessages = () => {
                             />
                           </div>
                         )}
-                        
-                        {/* Message timestamp */}
                         <p className={`text-xs mt-2 ${
                           message.senderId === currentUser.id
                             ? 'text-blue-100'
@@ -221,20 +200,19 @@ export const DirectMessages = () => {
               )}
             </ScrollArea>
             
-            {/* Message input */}
             <form onSubmit={handleSendMessage} className="p-4 border-t bg-white flex gap-4">
               <Input
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type a message..."
                 disabled={isLoading || isGeneratingResponse}
-                className="flex-1 h-12 text-sm px-4"
+                className="flex-1 h-14 text-sm px-4 w-full"
               />
               <Button 
                 type="submit" 
                 size="sm" 
                 disabled={isLoading || isGeneratingResponse} 
-                className="px-6 h-12"
+                className="px-6 h-14"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
