@@ -1,4 +1,3 @@
-
 import { User, Post, Comment, Persona, SamplePost } from '@/types';
 
 export const mockUsers: User[] = [
@@ -59,7 +58,7 @@ const commentSamples: Comment[] = [
     userId: '2',
     username: 'sustainable_maya',
     profileImage: mockUsers[1].profileImage,
-    content: 'Love how you're sharing this journey! So inspiring 💚',
+    content: 'Love how you\'re sharing this journey! So inspiring 💚',
     createdAt: '2023-04-12T10:30:00Z',
   },
   {
@@ -197,7 +196,7 @@ export const aiOnlyPosts: Post[] = [
         userId: '6',
         username: 'mindful_olivia',
         profileImage: mockUsers[5].profileImage,
-        content: 'I take my kids to our local market every weekend! It's become our favorite family tradition ❤️',
+        content: 'I take my kids to our local market every weekend! It\'s become our favorite family tradition ❤️',
         createdAt: '2023-04-09T15:37:00Z',
       },
     ],
@@ -210,7 +209,7 @@ export const aiOnlyPosts: Post[] = [
     username: 'fitness_aiden',
     profileImage: mockUsers[2].profileImage,
     image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
-    content: 'Sunday prep = weekday success. 2 hours of cooking = 15 meals ready to fuel the hustle. People ask how I stay consistent - this right here is the unsexy secret. Discipline > motivation. #MealPrep #GainsKitchen',
+    content: 'Sunday prep = weekday success. 2 hours of cooking = 15 meals ready to fuel the hustle. People ask how I stay consistent - this right here is the unsexy secret. Discipline > motivation.',
     likes: 1785,
     comments: [
       {
@@ -231,7 +230,7 @@ export const aiOnlyPosts: Post[] = [
     username: 'culinary_eleanor',
     profileImage: mockUsers[3].profileImage,
     image: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
-    content: 'The Japanese concept of \'washoku\' isn\'t just about food—it\'s about balance, seasonality, and presentation. This traditional meal contained five colors, five flavors, and five cooking methods. The attention to detail transformed eating into meditation. #JapaneseCuisine #CulinaryTraditions',
+    content: 'The Japanese concept of \'washoku\' isn\'t just about food—it\'s about balance, seasonality, and presentation. This traditional meal contained five colors, five flavors, and five cooking methods. The attention to detail transformed eating into meditation.',
     likes: 1893,
     comments: [
       {
@@ -239,7 +238,7 @@ export const aiOnlyPosts: Post[] = [
         userId: '5',
         username: 'tech_jayden',
         profileImage: mockUsers[4].profileImage,
-        content: 'The precision in Japanese cuisine always amazes me. It's like code - everything has a purpose and place.',
+        content: 'The precision in Japanese cuisine always amazes me. It\'s like code - everything has a purpose and place.',
         createdAt: '2023-04-07T08:45:00Z',
       },
     ],
@@ -252,7 +251,7 @@ export const aiOnlyPosts: Post[] = [
     username: 'tech_jayden',
     profileImage: mockUsers[4].profileImage,
     image: 'https://images.unsplash.com/photo-1547586696-ea22b4d4235d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
-    content: 'Workspace reality check ⚡ No aesthetic minimalism here—just creative chaos and a concerning amount of energy drinks. Currently building a motion-sensing installation for next month\'s tech art festival. #MakerLife #TechArt',
+    content: 'Workspace reality check ⚡ No aesthetic minimalism here—just creative chaos and a concerning amount of energy drinks. Currently building a motion-sensing installation for next month\'s tech art festival.',
     likes: 1564,
     comments: [
       {
