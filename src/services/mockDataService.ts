@@ -1,9 +1,9 @@
 
-import { User, Post, Comment } from '@/types';
+import { User, Post, Comment, Persona } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { generateAIContent } from './aiService';
 
-// Unsplash URLs for regular user content
+// Unsplash URLs for regular user content (high quality images)
 const unsplashImages = [
   'https://images.unsplash.com/photo-1527631746610-bca00a040d60?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80',
   'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=781&q=80',
@@ -14,6 +14,12 @@ const unsplashImages = [
   'https://images.unsplash.com/photo-1483721310020-03333e577078?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1528&q=80',
   'https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
   'https://images.unsplash.com/photo-1496171367470-9ed9a91ea931?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+  'https://images.unsplash.com/photo-1580927752452-89d86da3fa0a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+  'https://images.unsplash.com/photo-1594563703937-c6694de04470?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1169&q=80',
+  'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+  'https://images.unsplash.com/photo-1517438476312-10d79c077509?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
+  'https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80',
 ];
 
 // Profile pictures for regular users
@@ -59,6 +65,45 @@ const regularUsers: Omit<User, 'id'>[] = [
   },
 ];
 
+// AI user personas
+const aiPersonas: Persona[] = [
+  {
+    name: 'Maya Chen',
+    username: 'sustainable_maya',
+    bio: 'Environmental scientist turned sustainability influencer | Zero-waste advocate | Based in Portland',
+    topics: ['sustainability', 'eco-friendly', 'zero-waste', 'environment', 'nature', 'climate'],
+    style: 'casual'
+  },
+  {
+    name: 'Aiden Rodriguez',
+    username: 'fitness_aiden',
+    bio: 'Former athlete, current fitness entrepreneur | Building my app & training program | Mental health advocate',
+    topics: ['fitness', 'workout', 'health', 'entrepreneurship', 'mental health', 'nutrition'],
+    style: 'professional'
+  },
+  {
+    name: 'Eleanor Wright',
+    username: 'culinary_eleanor',
+    bio: 'Food writer & culinary anthropologist | Documenting traditional cooking techniques | World traveler',
+    topics: ['food', 'cuisine', 'cooking', 'culinary', 'travel', 'culture', 'tradition'],
+    style: 'professional'
+  },
+  {
+    name: 'Jayden Park',
+    username: 'tech_jayden',
+    bio: 'Software engineer & digital artist | Exploring tech × creativity | AI art experimentalist',
+    topics: ['technology', 'coding', 'art', 'design', 'AI', 'creative', 'innovation'],
+    style: 'artistic'
+  },
+  {
+    name: 'Olivia Santos',
+    username: 'mindful_olivia',
+    bio: 'Former corporate lawyer, now stationery business owner | Mindful mompreneur | Balancing work & family',
+    topics: ['business', 'productivity', 'parenting', 'mindfulness', 'organization', 'family', 'work-life'],
+    style: 'casual'
+  }
+];
+
 // Topics for generating diverse content
 const topics = [
   'travel', 'fitness', 'food', 'technology', 'art', 'music', 
@@ -80,17 +125,22 @@ const getRandomItem = <T>(array: T[]): T => {
   return array[Math.floor(Math.random() * array.length)];
 };
 
+// Get a random number within a range
+const getRandomInRange = (min: number, max: number): number => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
 /**
  * Generate a profile picture using Replicate API
  */
-export const generateProfilePicture = async (prompt?: string): Promise<string> => {
+export const generateProfilePicture = async (prompt?: string, style?: string): Promise<string> => {
   try {
     const response = await fetch('https://daeljnzfaslarflfxeqj.supabase.co/functions/v1/generate-profile-image', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ prompt, style }),
     });
 
     if (!response.ok) {
@@ -114,14 +164,14 @@ export const generateProfilePicture = async (prompt?: string): Promise<string> =
 /**
  * Generate a content image using Replicate API
  */
-export const generateContentImage = async (prompt?: string, type: 'scenic' | 'other' = 'other'): Promise<string> => {
+export const generateContentImage = async (prompt?: string, type: 'scenic' | 'other' = 'other', category?: string): Promise<string> => {
   try {
     const response = await fetch('https://daeljnzfaslarflfxeqj.supabase.co/functions/v1/generate-image', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ prompt, type }),
+      body: JSON.stringify({ prompt, type, category }),
     });
 
     if (!response.ok) {
@@ -145,14 +195,14 @@ export const generateContentImage = async (prompt?: string, type: 'scenic' | 'ot
 /**
  * Generate a caption using Gemini API
  */
-export const generateCaption = async (topic?: string, imageUrl?: string, contentType: 'post' | 'comment' = 'post'): Promise<string> => {
+export const generateCaption = async (topic?: string, imageUrl?: string, contentType: 'post' | 'comment' = 'post', persona?: string): Promise<string> => {
   try {
     const response = await fetch('https://daeljnzfaslarflfxeqj.supabase.co/functions/v1/generate-caption', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ topic, imageUrl, contentType }),
+      body: JSON.stringify({ topic, imageUrl, contentType, persona }),
     });
 
     if (!response.ok) {
@@ -209,73 +259,25 @@ export const createRegularUser = async (userData?: Partial<User>): Promise<User>
 };
 
 /**
- * Creates an AI user with a generated profile picture
+ * Creates an AI user with a generated profile picture using persona information
  */
-export const createAIUser = async (): Promise<User> => {
-  // Generate AI usernames that look realistic
-  const aiUsernames = [
-    'wanderlust_journey',
-    'urban_explorer',
-    'photo_enthusiast',
-    'culinary_adventures',
-    'fitness_journey',
-    'life_in_moments',
-    'creative_vision',
-    'daily_inspiration',
-    'art_of_living',
-    'world_through_lens',
-  ];
+export const createAIUser = async (personaIndex?: number): Promise<User> => {
+  // Select a persona either by index or randomly
+  const persona = personaIndex !== undefined && personaIndex < aiPersonas.length 
+    ? aiPersonas[personaIndex] 
+    : getRandomItem(aiPersonas);
   
-  // Generate AI names that look realistic
-  const aiNames = [
-    'Jamie Lee',
-    'Casey Morgan',
-    'Taylor Jordan',
-    'Riley Quinn',
-    'Avery Johnson',
-    'Cameron Smith',
-    'Dakota Park',
-    'Jordan Riley',
-    'Quinn Taylor',
-    'Morgan Bailey',
-  ];
+  // Generate a more specific profile picture prompt based on the persona
+  const profilePrompt = `${persona.name}, ${persona.bio.split('|')[0]}`;
   
-  // Random AI bios that look realistic
-  const aiBios = [
-    'Capturing life one photo at a time | Travel enthusiast | Coffee lover',
-    'Exploring the world and sharing stories | Photographer | Adventure seeker',
-    'Finding beauty in everyday moments | Creative | Nature lover',
-    'Food + Travel + Photography | Sharing my journey | Based in NYC',
-    'Fitness coach sharing tips and inspiration | Healthy living advocate',
-    'Artist and designer | Creating beautiful things | Living with purpose',
-    'Tech enthusiast with a passion for innovation | Coder | Reader',
-    'Sharing my creative journey | Photography | Fashion | Lifestyle',
-    'Nature enthusiast and environmental advocate | Hiking | Photography',
-    'Music lover and concert photographer | Guitar player | Coffee addict',
-  ];
-  
-  // Generate a profile picture using AI
-  const profilePrompts = [
-    'Professional headshot of a person with natural lighting',
-    'Portrait photograph of a person outdoors with bokeh background',
-    'Casual portrait of a person in urban setting',
-    'Close-up portrait with soft natural lighting',
-    'Stylish professional portrait with neutral background',
-  ];
-  
-  const username = getRandomItem(aiUsernames);
-  const name = getRandomItem(aiNames);
-  const bio = getRandomItem(aiBios);
-  const profilePrompt = getRandomItem(profilePrompts);
-  
-  // Generate profile picture
-  const profileImage = await generateProfilePicture(profilePrompt);
+  // Generate profile picture with style based on persona
+  const profileImage = await generateProfilePicture(profilePrompt, persona.style);
   
   const { data, error } = await supabase
     .from('users')
     .insert({
       id: `ai-${Math.random().toString(36).substring(2, 10)}`,
-      username: username,
+      username: persona.username,
       profile_image: profileImage,
       is_harmful: false
     })
@@ -290,10 +292,11 @@ export const createAIUser = async (): Promise<User> => {
   return {
     id: data.id,
     username: data.username,
-    name: name,
+    name: persona.name,
     profileImage: data.profile_image,
-    bio: bio,
+    bio: persona.bio,
     isAI: true,
+    persona: persona.name
   };
 };
 
@@ -301,23 +304,51 @@ export const createAIUser = async (): Promise<User> => {
  * Creates a post for a user
  */
 export const createPostForUser = async (user: User, isAI: boolean = false): Promise<Post> => {
-  const topic = getRandomItem(topics);
+  let topic = '';
   let content = '';
   let image: string | undefined = undefined;
+  let likesCount = getRandomInRange(300, 2000);
   
-  if (isAI) {
-    // Generate AI content
-    const imagePrompt = `A ${topic} scene, high quality photograph`;
-    image = await generateContentImage(imagePrompt, topic.includes('travel') || topic.includes('nature') || topic.includes('photography') ? 'scenic' : 'other');
-    content = await generateCaption(topic, image, 'post');
+  if (isAI && user.persona) {
+    // Find the persona for this AI user
+    const persona = aiPersonas.find(p => p.name === user.persona) || getRandomItem(aiPersonas);
+    
+    // Get a topic related to the persona
+    topic = getRandomItem(persona.topics);
+    
+    // Determine image category based on topic
+    let category = 'other';
+    if (topic.includes('travel') || topic.includes('nature') || topic.includes('environment')) {
+      category = 'travel';
+    } else if (topic.includes('food') || topic.includes('culinary') || topic.includes('cooking')) {
+      category = 'food';
+    } else if (topic.includes('fitness') || topic.includes('workout') || topic.includes('health')) {
+      category = 'fitness';
+    } else if (topic.includes('art') || topic.includes('creative') || topic.includes('design')) {
+      category = 'art';
+    } else if (topic.includes('tech') || topic.includes('coding') || topic.includes('innovation')) {
+      category = 'technology';
+    }
+    
+    // Generate image with appropriate type and category
+    const imagePrompt = `A ${topic} scene related to ${persona.name}'s interests`;
+    const imageType = category === 'travel' || category === 'nature' ? 'scenic' : 'other';
+    image = await generateContentImage(imagePrompt, imageType, category);
+    
+    // Generate caption with persona info
+    content = await generateCaption(topic, image, 'post', persona.name);
   } else {
-    // Use real content
+    // Use regular content
+    topic = getRandomItem(topics);
     image = getRandomItem(unsplashImages);
+    
+    // Generate caption without persona info
     const { content: generatedContent } = await generateAIContent('post', {
       id: user.id,
       username: user.username,
       profileImage: user.profileImage,
     }, topic);
+    
     content = generatedContent;
   }
   
@@ -329,6 +360,7 @@ export const createPostForUser = async (user: User, isAI: boolean = false): Prom
       profile_image: user.profileImage,
       content: content,
       image_url: image,
+      likes: likesCount,
       is_ai_generated: isAI
     })
     .select()
@@ -358,11 +390,14 @@ export const createPostForUser = async (user: User, isAI: boolean = false): Prom
 export const addCommentToPost = async (post: Post, commentUser: User, isAI: boolean = false): Promise<Comment> => {
   let content = '';
   
-  if (isAI) {
-    // Generate AI comment
-    content = await generateCaption(undefined, post.image, 'comment');
+  if (isAI && commentUser.persona) {
+    // Find the persona for this AI user
+    const persona = aiPersonas.find(p => p.name === commentUser.persona);
+    
+    // Generate AI comment with persona
+    content = await generateCaption(undefined, post.image, 'comment', persona?.name);
   } else {
-    // Use real comment
+    // Use regular comment
     const { content: generatedContent } = await generateAIContent('comment', {
       id: commentUser.id,
       username: commentUser.username,
@@ -414,10 +449,10 @@ export const generateMockData = async (): Promise<void> => {
       console.log(`Created regular user: ${user.username}`);
     }
     
-    // Create 5 AI users
+    // Create 5 AI users with specified personas
     const aiUsers: User[] = [];
     for (let i = 0; i < 5; i++) {
-      const user = await createAIUser();
+      const user = await createAIUser(i);
       aiUsers.push(user);
       console.log(`Created AI user: ${user.username}`);
     }

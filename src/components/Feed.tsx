@@ -5,7 +5,7 @@ import { useAppContext } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { generateMockData } from '@/services/mockDataService';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, UserPlus, Sparkles } from 'lucide-react';
 
 export const Feed: React.FC = () => {
   const { posts, feedType, createAIContent } = useAppContext();
@@ -19,18 +19,18 @@ export const Feed: React.FC = () => {
   const handleGenerateMockData = async () => {
     try {
       setIsGenerating(true);
-      toast.info('Generating mock data...', {
+      toast.info('Generating realistic users and content...', {
         description: 'This may take a few minutes. Please wait.'
       });
       
       await generateMockData();
       
-      toast.success('Mock data generated successfully!', {
-        description: 'Refresh the page to see the new content.'
+      toast.success('Content generated successfully!', {
+        description: 'Refresh the page to see all the new users and posts.'
       });
     } catch (error) {
       console.error('Error generating mock data:', error);
-      toast.error('Failed to generate mock data', {
+      toast.error('Failed to generate content', {
         description: 'Please try again later.'
       });
     } finally {
@@ -40,29 +40,41 @@ export const Feed: React.FC = () => {
   
   return (
     <div>
-      <div className="mb-6 flex justify-between">
-        <Button 
-          onClick={handleGenerateMockData}
-          className="bg-purple-500 hover:bg-purple-600 text-white"
-          disabled={isGenerating}
-        >
-          {isGenerating ? (
-            <>
-              <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            'Generate Mock Data'
-          )}
-        </Button>
-        
-        <Button 
-          onClick={createAIContent}
-          className="bg-blue-500 hover:bg-blue-600 text-white"
-          disabled={isGenerating}
-        >
-          Generate AI Content
-        </Button>
+      <div className="mb-6 flex flex-col space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
+        <h2 className="text-lg font-semibold">Generate Content</h2>
+        <p className="text-sm text-gray-600">
+          Create realistic users and content to populate your feed.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Button 
+            onClick={handleGenerateMockData}
+            className="bg-purple-500 hover:bg-purple-600 text-white flex-1"
+            disabled={isGenerating}
+            size="lg"
+          >
+            {isGenerating ? (
+              <>
+                <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                Generating Content...
+              </>
+            ) : (
+              <>
+                <UserPlus className="mr-2 h-4 w-4" />
+                Generate Realistic Users & Posts
+              </>
+            )}
+          </Button>
+          
+          <Button 
+            onClick={createAIContent}
+            className="bg-blue-500 hover:bg-blue-600 text-white flex-1"
+            disabled={isGenerating}
+            size="lg"
+          >
+            <Sparkles className="mr-2 h-4 w-4" />
+            Generate Single AI Post
+          </Button>
+        </div>
       </div>
       
       {displayPosts.length === 0 ? (

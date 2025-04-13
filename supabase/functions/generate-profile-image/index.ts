@@ -23,9 +23,23 @@ serve(async (req) => {
       );
     }
 
-    const { prompt } = await req.json();
+    const { prompt, style } = await req.json();
     
-    const defaultPrompt = "Professional portrait photograph of a person with natural lighting, neutral background, head and shoulders, high resolution, photorealistic";
+    let enhancedPrompt = prompt || "";
+    
+    // Add portrait-specific styling based on requested style
+    if (style === 'professional') {
+      enhancedPrompt = `Professional headshot of a ${enhancedPrompt || "person"}, business attire, clean backdrop, studio lighting, high quality, photorealistic`;
+    } else if (style === 'casual') {
+      enhancedPrompt = `Casual portrait of a ${enhancedPrompt || "person"}, natural lighting, outdoors, candid, relaxed, high quality, photorealistic`;
+    } else if (style === 'artistic') {
+      enhancedPrompt = `Artistic portrait of a ${enhancedPrompt || "person"}, stylized, creative lighting, unique perspective, high quality`;
+    } else {
+      // Default style
+      enhancedPrompt = `Portrait photograph of a ${enhancedPrompt || "person"} with natural lighting, neutral background, head and shoulders, high resolution, photorealistic`;
+    }
+    
+    console.log(`Generating profile image with prompt: ${enhancedPrompt}`);
     
     const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
@@ -37,7 +51,7 @@ serve(async (req) => {
         version: "687458266007b196a490e79a77bae4b123c1792900e1cb730a51344887ad9832",
         input: {
           model: "dev",
-          prompt: prompt || defaultPrompt,
+          prompt: enhancedPrompt,
           go_fast: false,
           megapixels: "1",
           num_outputs: 1,
@@ -50,6 +64,8 @@ serve(async (req) => {
     });
 
     const prediction = await response.json();
+    
+    console.log("Prediction response:", prediction);
     
     // Check if it's still processing
     if (prediction.status === "starting" || prediction.status === "processing") {

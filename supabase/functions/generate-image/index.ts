@@ -23,24 +23,40 @@ serve(async (req) => {
       );
     }
 
-    const { prompt, type } = await req.json();
+    const { prompt, type, category } = await req.json();
     
     let model = "google/imagen-3";
-    let input: any = {
-      prompt: prompt || "A beautiful landscape photo of nature",
-      aspect_ratio: "4:3",
-      safety_filter_level: "block_medium_and_above"
-    };
+    let enhancedPrompt = prompt || "A beautiful photo";
+    let input: any = {};
     
-    // If type is 'profile', use Flux model instead
-    if (type === 'scenic') {
-      // Use imagen for scenic photos
+    // Enhance the prompt based on the content category
+    if (category === 'travel') {
+      enhancedPrompt = `${enhancedPrompt || "A beautiful travel scene"} with stunning landscapes, natural lighting, high quality travel photography`;
+    } else if (category === 'food') {
+      enhancedPrompt = `${enhancedPrompt || "Delicious food"} with perfect composition, professional food photography, appetizing, high quality`;
+    } else if (category === 'fitness') {
+      enhancedPrompt = `${enhancedPrompt || "Fitness scene"} with dynamic action, healthy lifestyle, professional sports photography, high quality`;
+    } else if (category === 'art') {
+      enhancedPrompt = `${enhancedPrompt || "Creative artwork"} with artistic composition, rich colors, professional art photography, high quality`;
+    } else if (category === 'technology') {
+      enhancedPrompt = `${enhancedPrompt || "Modern technology"} with clean lines, professional product photography, high quality`;
+    }
+    
+    console.log(`Generating image with type: ${type}, category: ${category}, prompt: ${enhancedPrompt}`);
+    
+    // Use Imagen for scenic/travel/nature photos
+    if (type === 'scenic' || category === 'travel' || category === 'nature') {
       model = "google/imagen-3";
+      input = {
+        prompt: enhancedPrompt,
+        aspect_ratio: "4:3",
+        safety_filter_level: "block_medium_and_above"
+      };
     } else {
-      // Use flux for other types of images
+      // Use Flux for other types of images
       model = "black-forest-labs/flux-schnell";
       input = {
-        prompt: prompt || "A beautiful photo",
+        prompt: enhancedPrompt,
         go_fast: true,
         megapixels: "1",
         num_outputs: 1,
@@ -51,6 +67,10 @@ serve(async (req) => {
       };
     }
     
+    const modelVersion = model === "google/imagen-3" 
+      ? "af961a46f0fcb7254a90771ef675e9101c551771ddb78d3448167f3040b536ce" 
+      : "9eeefd04f121a8c8073abb6c336a970f25548c3df0622dd8c9b491b3ca6a4c68";
+    
     const response = await fetch("https://api.replicate.com/v1/predictions", {
       method: "POST",
       headers: {
@@ -58,14 +78,14 @@ serve(async (req) => {
         Authorization: `Token ${REPLICATE_API_KEY}`,
       },
       body: JSON.stringify({
-        version: model === "google/imagen-3" 
-          ? "af961a46f0fcb7254a90771ef675e9101c551771ddb78d3448167f3040b536ce" 
-          : "9eeefd04f121a8c8073abb6c336a970f25548c3df0622dd8c9b491b3ca6a4c68",
+        version: modelVersion,
         input: input,
       }),
     });
 
     const prediction = await response.json();
+    
+    console.log("Prediction response:", prediction);
     
     // Check if it's still processing
     if (prediction.status === "starting" || prediction.status === "processing") {

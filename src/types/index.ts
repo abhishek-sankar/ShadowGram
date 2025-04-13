@@ -6,6 +6,7 @@ export interface User {
   profileImage: string;
   bio: string;
   isAI?: boolean;
+  persona?: string;
 }
 
 export interface Comment {
@@ -35,4 +36,13 @@ export interface AIGenerationOptions {
   profileType?: 'realistic' | 'stylized';
   contentType?: 'travel' | 'food' | 'fitness' | 'technology' | 'art';
   imageStyle?: 'photo' | 'illustration' | 'mixed';
+}
+
+export interface Persona {
+  name: string;
+  username: string;
+  bio: string;
+  topics: string[];
+  photosStyle?: string;
+  style?: 'professional' | 'casual' | 'artistic';
 }

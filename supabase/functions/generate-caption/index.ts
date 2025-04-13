@@ -23,16 +23,24 @@ serve(async (req) => {
       );
     }
 
-    const { topic, imageUrl, contentType } = await req.json();
+    const { topic, imageUrl, contentType, persona } = await req.json();
     
     let prompt = "";
     
     if (contentType === 'post') {
-      prompt = `Generate an engaging, authentic-sounding Instagram caption about ${topic || 'daily life'}. The caption should be under 150 characters, sound like a real person wrote it, and be relatable. Don't include hashtags.`;
+      prompt = `Generate an engaging, authentic-sounding Instagram caption for ${persona || 'a social media user'} about ${topic || 'daily life'}. 
+      The caption should sound natural and conversational, like something a real person would write.
+      If the topic is travel or nature, make it reflective and awe-inspired.
+      If the topic is food, focus on flavors and experiences.
+      If the topic is fitness, be motivational but realistic.
+      If the topic is technology, be informative but accessible.
+      If the topic is art or creativity, be expressive and thoughtful.
+      The caption should be 2-3 sentences maximum and include no hashtags.`;
     } else if (contentType === 'comment') {
-      prompt = `Generate a brief, supportive comment that someone might leave on an Instagram post about ${topic || 'a general topic'}. Keep it under 80 characters and make it sound like a real person wrote it.`;
+      prompt = `Generate a brief, supportive comment that ${persona || 'someone'} might leave on an Instagram post about ${topic || 'a general topic'}. 
+      Keep it genuine, friendly, and authentic-sounding. Under 100 characters. No hashtags.`;
     } else {
-      prompt = `Write a short, engaging social media post about ${topic || 'something interesting'} that sounds authentic and relatable. Keep it under 200 characters.`;
+      prompt = `Write a short, engaging social media post by ${persona || 'a social media user'} about ${topic || 'something interesting'} that sounds authentic and relatable. Keep it under 200 characters.`;
     }
     
     // If we have an image URL, we can use it for context
