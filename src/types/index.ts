@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   username: string;
@@ -53,4 +52,21 @@ export interface SamplePost {
   content: string;
   imageDescription?: string;
   hashtags?: string[];
+}
+
+export interface Message {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  createdAt: string;
+  isRead: boolean;
+}
+
+export interface Conversation {
+  id: string;
+  participantIds: string[];
+  lastMessage?: string;
+  lastMessageTime?: string;
+  unreadCount?: number;
 }
