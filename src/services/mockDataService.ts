@@ -2,6 +2,7 @@
 import { User, Post, Comment, Persona } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
 import { generateAIContent } from './aiService';
+import { aiPersonas } from '@/data/mockData';
 
 // Unsplash URLs for regular user content (high quality images)
 const unsplashImages = [
@@ -63,53 +64,6 @@ const regularUsers: Omit<User, 'id'>[] = [
     profileImage: regularUserProfiles[4],
     bio: 'Building the future through code | Developer | AI Enthusiast',
   },
-];
-
-// AI user personas
-const aiPersonas: Persona[] = [
-  {
-    name: 'Maya Chen',
-    username: 'sustainable_maya',
-    bio: 'Environmental scientist turned sustainability influencer | Zero-waste advocate | Based in Portland',
-    topics: ['sustainability', 'eco-friendly', 'zero-waste', 'environment', 'nature', 'climate'],
-    style: 'casual'
-  },
-  {
-    name: 'Aiden Rodriguez',
-    username: 'fitness_aiden',
-    bio: 'Former athlete, current fitness entrepreneur | Building my app & training program | Mental health advocate',
-    topics: ['fitness', 'workout', 'health', 'entrepreneurship', 'mental health', 'nutrition'],
-    style: 'professional'
-  },
-  {
-    name: 'Eleanor Wright',
-    username: 'culinary_eleanor',
-    bio: 'Food writer & culinary anthropologist | Documenting traditional cooking techniques | World traveler',
-    topics: ['food', 'cuisine', 'cooking', 'culinary', 'travel', 'culture', 'tradition'],
-    style: 'professional'
-  },
-  {
-    name: 'Jayden Park',
-    username: 'tech_jayden',
-    bio: 'Software engineer & digital artist | Exploring tech × creativity | AI art experimentalist',
-    topics: ['technology', 'coding', 'art', 'design', 'AI', 'creative', 'innovation'],
-    style: 'artistic'
-  },
-  {
-    name: 'Olivia Santos',
-    username: 'mindful_olivia',
-    bio: 'Former corporate lawyer, now stationery business owner | Mindful mompreneur | Balancing work & family',
-    topics: ['business', 'productivity', 'parenting', 'mindfulness', 'organization', 'family', 'work-life'],
-    style: 'casual'
-  }
-];
-
-// Topics for generating diverse content
-const topics = [
-  'travel', 'fitness', 'food', 'technology', 'art', 'music', 
-  'books', 'movies', 'fashion', 'photography', 'nature',
-  'adventure', 'city life', 'coffee culture', 'hiking', 'beach day',
-  'home cooking', 'weekend getaway', 'pet life', 'workout routines'
 ];
 
 // Generate a random date within the last 30 days
@@ -311,35 +265,75 @@ export const createPostForUser = async (user: User, isAI: boolean = false): Prom
   
   if (isAI && user.persona) {
     // Find the persona for this AI user
-    const persona = aiPersonas.find(p => p.name === user.persona) || getRandomItem(aiPersonas);
+    const persona = aiPersonas.find(p => p.name === user.persona);
     
-    // Get a topic related to the persona
-    topic = getRandomItem(persona.topics);
-    
-    // Determine image category based on topic
-    let category = 'other';
-    if (topic.includes('travel') || topic.includes('nature') || topic.includes('environment')) {
-      category = 'travel';
-    } else if (topic.includes('food') || topic.includes('culinary') || topic.includes('cooking')) {
-      category = 'food';
-    } else if (topic.includes('fitness') || topic.includes('workout') || topic.includes('health')) {
-      category = 'fitness';
-    } else if (topic.includes('art') || topic.includes('creative') || topic.includes('design')) {
-      category = 'art';
-    } else if (topic.includes('tech') || topic.includes('coding') || topic.includes('innovation')) {
-      category = 'technology';
+    // If we have a matching persona with sample posts, use one of them
+    if (persona && persona.samplePosts && persona.samplePosts.length > 0) {
+      const samplePost = getRandomItem(persona.samplePosts);
+      
+      // Use the sample post content
+      content = samplePost.content;
+      
+      // For image, use the description to generate something relevant
+      if (samplePost.imageDescription) {
+        // Determine image category based on persona topics
+        let category = 'other';
+        if (persona.topics.some(t => ['travel', 'nature', 'environment', 'hiking'].includes(t))) {
+          category = 'travel';
+        } else if (persona.topics.some(t => ['food', 'culinary', 'cooking'].includes(t))) {
+          category = 'food';
+        } else if (persona.topics.some(t => ['fitness', 'workout', 'health'].includes(t))) {
+          category = 'fitness';
+        } else if (persona.topics.some(t => ['art', 'creative', 'design'].includes(t))) {
+          category = 'art';
+        } else if (persona.topics.some(t => ['tech', 'coding', 'innovation'].includes(t))) {
+          category = 'technology';
+        }
+        
+        // Generate image with appropriate type and category
+        const imagePrompt = samplePost.imageDescription;
+        const imageType = category === 'travel' || category === 'nature' ? 'scenic' : 'other';
+        image = await generateContentImage(imagePrompt, imageType, category);
+        
+        // Add hashtags if present
+        if (samplePost.hashtags && samplePost.hashtags.length > 0) {
+          const hashtagString = samplePost.hashtags.map(tag => `#${tag}`).join(' ');
+          content = `${content} ${hashtagString}`;
+        }
+      } else {
+        // Use a default image from Unsplash
+        image = getRandomItem(unsplashImages);
+      }
+    } else {
+      // Fallback to the old method if no sample posts
+      // Get a topic related to the persona
+      topic = getRandomItem(persona?.topics || ['lifestyle']);
+      
+      // Determine image category based on topic
+      let category = 'other';
+      if (topic.includes('travel') || topic.includes('nature') || topic.includes('environment')) {
+        category = 'travel';
+      } else if (topic.includes('food') || topic.includes('culinary') || topic.includes('cooking')) {
+        category = 'food';
+      } else if (topic.includes('fitness') || topic.includes('workout') || topic.includes('health')) {
+        category = 'fitness';
+      } else if (topic.includes('art') || topic.includes('creative') || topic.includes('design')) {
+        category = 'art';
+      } else if (topic.includes('tech') || topic.includes('coding') || topic.includes('innovation')) {
+        category = 'technology';
+      }
+      
+      // Generate image with appropriate type and category
+      const imagePrompt = `A ${topic} scene related to ${persona?.name}'s interests`;
+      const imageType = category === 'travel' || category === 'nature' ? 'scenic' : 'other';
+      image = await generateContentImage(imagePrompt, imageType, category);
+      
+      // Generate caption with persona info
+      content = await generateCaption(topic, image, 'post', persona?.name);
     }
-    
-    // Generate image with appropriate type and category
-    const imagePrompt = `A ${topic} scene related to ${persona.name}'s interests`;
-    const imageType = category === 'travel' || category === 'nature' ? 'scenic' : 'other';
-    image = await generateContentImage(imagePrompt, imageType, category);
-    
-    // Generate caption with persona info
-    content = await generateCaption(topic, image, 'post', persona.name);
   } else {
     // Use regular content
-    topic = getRandomItem(topics);
+    topic = getRandomItem(aiPersonas[0].topics); // Just use any topic from our personas
     image = getRandomItem(unsplashImages);
     
     // Generate caption without persona info
@@ -451,7 +445,7 @@ export const generateMockData = async (): Promise<void> => {
     
     // Create 5 AI users with specified personas
     const aiUsers: User[] = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < aiPersonas.length && i < 5; i++) {
       const user = await createAIUser(i);
       aiUsers.push(user);
       console.log(`Created AI user: ${user.username}`);
@@ -476,7 +470,7 @@ export const generateMockData = async (): Promise<void> => {
       }
     }
     
-    // Create 2-3 posts for each AI user
+    // Create 2-3 posts for each AI user using their sample posts
     for (const user of aiUsers) {
       const numPosts = Math.floor(Math.random() * 2) + 2; // 2-3 posts
       for (let i = 0; i < numPosts; i++) {

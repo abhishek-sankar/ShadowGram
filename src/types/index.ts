@@ -45,4 +45,11 @@ export interface Persona {
   topics: string[];
   photosStyle?: string;
   style?: 'professional' | 'casual' | 'artistic';
+  samplePosts?: SamplePost[];
+}
+
+export interface SamplePost {
+  content: string;
+  imageDescription?: string;
+  hashtags?: string[];
 }

@@ -20,18 +20,18 @@ export const Feed: React.FC = () => {
     try {
       setIsGenerating(true);
       toast.info('Generating realistic users and content...', {
-        description: 'This may take a few minutes. Please wait.'
+        description: 'This may take a few minutes. Please wait. We\'re using the personas you provided to create realistic content.'
       });
       
       await generateMockData();
       
       toast.success('Content generated successfully!', {
-        description: 'Refresh the page to see all the new users and posts.'
+        description: 'Refresh the page to see all the new users and posts with your personas.'
       });
     } catch (error) {
       console.error('Error generating mock data:', error);
       toast.error('Failed to generate content', {
-        description: 'Please try again later.'
+        description: 'Please make sure REPLICATE_API_KEY and GEMINI_API_KEY are set in Supabase Edge Function Secrets.'
       });
     } finally {
       setIsGenerating(false);
@@ -43,7 +43,7 @@ export const Feed: React.FC = () => {
       <div className="mb-6 flex flex-col space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-100">
         <h2 className="text-lg font-semibold">Generate Content</h2>
         <p className="text-sm text-gray-600">
-          Create realistic users and content to populate your feed.
+          Create realistic users and content with your custom personas to populate your feed.
         </p>
         <div className="flex flex-col sm:flex-row gap-4">
           <Button 
@@ -60,7 +60,7 @@ export const Feed: React.FC = () => {
             ) : (
               <>
                 <UserPlus className="mr-2 h-4 w-4" />
-                Generate Realistic Users & Posts
+                Generate Personas & Posts
               </>
             )}
           </Button>
