@@ -15,8 +15,8 @@ export const Sidebar: React.FC = () => {
   return (
     <div className="w-16 md:w-64 border-r border-gray-200 bg-white flex flex-col">
       <div className="p-5">
-        <h1 className="text-xl font-bold hidden md:block">InstaClone</h1>
-        <h1 className="text-xl font-bold md:hidden">IC</h1>
+        <h1 className="text-xl font-bold hidden md:block">ShadowGram</h1>
+        <h1 className="text-xl font-bold md:hidden">SG</h1>
       </div>
       
       <div className="flex-1 pt-5">

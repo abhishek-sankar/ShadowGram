@@ -32,7 +32,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Sidebar />
       <main className="flex-1 overflow-y-auto">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2">
-          <h1 className="text-xl font-semibold">InstaClone</h1>
+          <h1 className="text-xl font-semibold">ShadowGram</h1>
           <Button 
             variant="outline" 
             className={
