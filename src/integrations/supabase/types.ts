@@ -9,7 +9,107 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_ai_generated: boolean
+          post_id: string | null
+          profile_image: string | null
+          user_id: string
+          username: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_ai_generated?: boolean
+          post_id?: string | null
+          profile_image?: string | null
+          user_id: string
+          username: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_ai_generated?: boolean
+          post_id?: string | null
+          profile_image?: string | null
+          user_id?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_ai_generated: boolean
+          likes: number | null
+          profile_image: string | null
+          user_id: string
+          username: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_ai_generated?: boolean
+          likes?: number | null
+          profile_image?: string | null
+          user_id: string
+          username: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_ai_generated?: boolean
+          likes?: number | null
+          profile_image?: string | null
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          created_at: string
+          id: string
+          is_harmful: boolean
+          profile_image: string | null
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          is_harmful?: boolean
+          profile_image?: string | null
+          username: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_harmful?: boolean
+          profile_image?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

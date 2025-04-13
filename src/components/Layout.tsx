@@ -1,9 +1,11 @@
+
 import React from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { FeedType } from '@/types';
 import { useAppContext } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { ShieldAlert, ShieldCheck } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,7 +17,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const handleSwitchFeed = () => {
     switchFeedType();
     if (feedType === 'regular') {
-      toast('Switched to shadowbanned mode', {
+      toast('Switched to AI bubble mode', {
         description: 'You will now see AI-generated content in your feed'
       });
     } else {
@@ -40,7 +42,17 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             }
             onClick={handleSwitchFeed}
           >
-            {feedType === 'regular' ? 'Switch to Shadowbanned' : 'Switch to Regular'}
+            {feedType === 'regular' ? (
+              <>
+                <ShieldAlert className="h-4 w-4 mr-2" />
+                Switch to AI Bubble Mode
+              </>
+            ) : (
+              <>
+                <ShieldCheck className="h-4 w-4 mr-2" />
+                Switch to Regular Mode
+              </>
+            )}
           </Button>
         </div>
         <div className="mx-auto max-w-2xl px-4 py-6">

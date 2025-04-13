@@ -5,14 +5,14 @@ export interface User {
   name: string;
   profileImage: string;
   bio: string;
-  isAI: boolean;
+  isAI?: boolean;
 }
 
 export interface Comment {
   id: string;
   userId: string;
   username: string;
-  profileImage: string;
+  profileImage?: string;
   content: string;
   createdAt: string;
 }
@@ -21,7 +21,7 @@ export interface Post {
   id: string;
   userId: string;
   username: string;
-  profileImage: string;
+  profileImage?: string;
   image?: string;
   content: string;
   likes: number;

@@ -1,19 +1,25 @@
 
 import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal } from 'lucide-react';
+import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, AlertTriangle } from 'lucide-react';
 import { useAppContext } from '@/contexts/AppContext';
 import { Post as PostType } from '@/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 
 interface PostProps {
   post: PostType;
 }
 
 export const Post: React.FC<PostProps> = ({ post }) => {
-  const { likePost, addComment } = useAppContext();
+  const { likePost, addComment, markUserHarmful } = useAppContext();
   const [comment, setComment] = useState('');
   const [showComments, setShowComments] = useState(false);
   const [liked, setLiked] = useState(false);
@@ -37,6 +43,10 @@ export const Post: React.FC<PostProps> = ({ post }) => {
   const toggleComments = () => {
     setShowComments(!showComments);
   };
+
+  const handleMarkHarmful = () => {
+    markUserHarmful(post.userId);
+  };
   
   return (
     <div className="mb-6 rounded-md border border-gray-200 bg-white overflow-hidden">
@@ -51,9 +61,19 @@ export const Post: React.FC<PostProps> = ({ post }) => {
             <p className="text-sm font-medium">{post.username}</p>
           </div>
         </div>
-        <Button variant="ghost" size="icon" className="h-8 w-8">
-          <MoreHorizontal className="h-5 w-5" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <MoreHorizontal className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleMarkHarmful} className="text-red-500 cursor-pointer">
+              <AlertTriangle className="h-4 w-4 mr-2" />
+              Mark as Harmful User
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       
       {/* Post image */}
@@ -73,10 +93,10 @@ export const Post: React.FC<PostProps> = ({ post }) => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className={`h-8 w-8 ${liked ? 'text-instagram-red' : ''}`}
+            className={`h-8 w-8 ${liked ? 'text-red-500' : ''}`}
             onClick={handleLike}
           >
-            <Heart className={`h-5 w-5 ${liked ? 'fill-instagram-red' : ''}`} />
+            <Heart className={`h-5 w-5 ${liked ? 'fill-current text-red-500' : ''}`} />
           </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={toggleComments}>
             <MessageCircle className="h-5 w-5" />
@@ -128,7 +148,7 @@ export const Post: React.FC<PostProps> = ({ post }) => {
         <Button 
           type="submit" 
           variant="ghost" 
-          className="text-instagram-blue font-semibold"
+          className="text-blue-500 font-semibold"
           disabled={!comment.trim()}
         >
           Post
