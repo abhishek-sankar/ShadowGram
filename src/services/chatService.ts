@@ -31,7 +31,7 @@ const mockConversations: Record<string, Message[]> = {
       id: '3',
       senderId: '3', // Aiden
       receiverId: '1', // User
-      content: 'Hey! Just checking in - how's your fitness routine going this week?',
+      content: 'Hey! Just checking in - how\'s your fitness routine going this week?',
       createdAt: new Date(Date.now() - 86400000).toISOString(),
       isRead: true,
     },
