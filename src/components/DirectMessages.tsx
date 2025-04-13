@@ -5,9 +5,11 @@ import { getChatUsers, getConversation, sendMessage } from '@/services/chatServi
 import { useAppContext } from '@/contexts/AppContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Send, User as UserIcon } from 'lucide-react';
+import { Send, User as UserIcon, Loader2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const DirectMessages = () => {
   const { currentUser } = useAppContext();
@@ -16,6 +18,7 @@ export const DirectMessages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Load chat users
@@ -50,14 +53,74 @@ export const DirectMessages = () => {
     setIsLoading(true);
     
     try {
+      const selectedUser = users.find(user => user.id === selectedUserId);
+      
+      // Regular message sending for all users
       await sendMessage(selectedUserId, newMessage);
       setNewMessage('');
       
-      // Reload conversation
+      // Get updated conversation
       const updatedConversation = getConversation(selectedUserId);
       setMessages(updatedConversation);
+      
+      // If it's Maya, we also want to use the special LlamaIndex agent
+      if (selectedUser?.name === 'Maya Chen') {
+        setIsGeneratingImage(true);
+        toast.info("Maya is thinking...");
+        
+        try {
+          // Call the Maya agent edge function with the message and conversation history
+          const { data, error } = await supabase.functions.invoke('maya-agent', {
+            body: { 
+              message: newMessage,
+              conversation: updatedConversation.slice(-10) // Send the last 10 messages for context
+            }
+          });
+          
+          if (error) {
+            console.error('Error calling Maya agent:', error);
+            toast.error("Sorry, Maya is unavailable right now");
+          } else if (data?.message) {
+            // Get a unique ID for the message
+            const messageId = `maya-${Date.now()}`;
+            
+            // Create a message object for Maya's text response
+            const mayaResponse: Message = {
+              id: messageId,
+              senderId: selectedUserId,
+              receiverId: currentUser.id,
+              content: data.message,
+              createdAt: new Date().toISOString(),
+              isRead: true,
+              image: data.image // May be null if no image
+            };
+            
+            // Add Maya's enhanced response to the conversation
+            const conversationKey = selectedUserId === '2' 
+              ? 'maya-convo' 
+              : `${selectedUserId}-convo`;
+            
+            // Update the messages in the mock conversation store
+            const mockConversations = (window as any).mockConversations || {};
+            if (!mockConversations[conversationKey]) {
+              mockConversations[conversationKey] = [];
+            }
+            mockConversations[conversationKey].push(mayaResponse);
+            (window as any).mockConversations = mockConversations;
+            
+            // Update the UI with the new message
+            setMessages(prev => [...prev, mayaResponse]);
+          }
+        } catch (error) {
+          console.error('Error with Maya agent:', error);
+          toast.error("Something went wrong with Maya's response");
+        } finally {
+          setIsGeneratingImage(false);
+        }
+      }
     } catch (error) {
       console.error('Error sending message:', error);
+      toast.error("Failed to send message");
     } finally {
       setIsLoading(false);
     }
@@ -74,13 +137,13 @@ export const DirectMessages = () => {
   const selectedUser = users.find(user => user.id === selectedUserId);
   
   return (
-    <div className="flex h-[90vh] max-w-5xl mx-auto border rounded-xl overflow-hidden shadow-lg">
+    <div className="flex h-[calc(100vh-100px)] w-full max-w-7xl mx-auto border rounded-xl overflow-hidden shadow-lg">
       {/* Users sidebar */}
-      <div className="w-1/4 border-r bg-gray-50">
+      <div className="w-1/4 min-w-[250px] border-r bg-gray-50">
         <div className="p-5 border-b bg-white">
-          <h2 className="text-xl font-bold text-gray-800">Messages</h2>
+          <h2 className="text-2xl font-bold text-gray-800">Messages</h2>
         </div>
-        <ScrollArea className="h-[calc(90vh-120px)]">
+        <ScrollArea className="h-[calc(100vh-180px)]">
           <div className="p-3">
             {users.map(user => (
               <div
@@ -90,13 +153,13 @@ export const DirectMessages = () => {
                 }`}
                 onClick={() => setSelectedUserId(user.id)}
               >
-                <Avatar className="w-12 h-12">
+                <Avatar className="w-14 h-14">
                   <AvatarImage src={user.profileImage} alt={user.name} />
                   <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-800 truncate">{user.name}</p>
-                  <p className="text-xs text-gray-500 truncate">
+                  <p className="text-base font-semibold text-gray-800 truncate">{user.name}</p>
+                  <p className="text-sm text-gray-500 truncate">
                     {user.isAI ? 'AI Assistant' : '@' + user.username}
                   </p>
                 </div>
@@ -107,17 +170,17 @@ export const DirectMessages = () => {
       </div>
       
       {/* Chat area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col bg-gray-50">
         {selectedUser ? (
           <>
             {/* Chat header */}
-            <div className="p-5 border-b flex items-center gap-4 bg-white shadow-sm">
-              <Avatar className="w-14 h-14">
+            <div className="p-6 border-b flex items-center gap-4 bg-white shadow-sm">
+              <Avatar className="w-16 h-16">
                 <AvatarImage src={selectedUser.profileImage} alt={selectedUser.name} />
                 <AvatarFallback>{getInitials(selectedUser.name)}</AvatarFallback>
               </Avatar>
               <div>
-                <h2 className="text-xl font-bold text-gray-800">{selectedUser.name}</h2>
+                <h2 className="text-2xl font-bold text-gray-800">{selectedUser.name}</h2>
                 <p className="text-sm text-gray-500">
                   {selectedUser.isAI ? 'AI Assistant' : '@' + selectedUser.username}
                 </p>
@@ -125,7 +188,7 @@ export const DirectMessages = () => {
             </div>
             
             {/* Messages */}
-            <ScrollArea className="flex-1 p-6 bg-gray-50">
+            <ScrollArea className="flex-1 p-6">
               {messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-gray-500">
                   <UserIcon className="h-16 w-16 mb-4 text-gray-300" />
@@ -133,7 +196,7 @@ export const DirectMessages = () => {
                   <p className="text-sm">Send a message to start the conversation</p>
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-8">
                   {messages.map(message => (
                     <div
                       key={message.id}
@@ -144,13 +207,27 @@ export const DirectMessages = () => {
                       }`}
                     >
                       <div
-                        className={`max-w-[70%] rounded-xl p-4 shadow-sm ${
+                        className={`max-w-[75%] rounded-xl p-5 shadow-sm ${
                           message.senderId === currentUser.id
                             ? 'bg-blue-500 text-white'
                             : 'bg-white border'
                         }`}
                       >
-                        <p className="text-sm">{message.content}</p>
+                        {/* Message content */}
+                        <p className="text-base">{message.content}</p>
+                        
+                        {/* Message image if present */}
+                        {message.image && (
+                          <div className="mt-3 rounded-lg overflow-hidden">
+                            <img 
+                              src={message.image} 
+                              alt="Shared content" 
+                              className="w-full h-auto max-h-[300px] object-cover"
+                            />
+                          </div>
+                        )}
+                        
+                        {/* Message timestamp */}
                         <p className={`text-xs mt-2 ${
                           message.senderId === currentUser.id
                             ? 'text-blue-100'
@@ -164,27 +241,39 @@ export const DirectMessages = () => {
                       </div>
                     </div>
                   ))}
+                  {isGeneratingImage && (
+                    <div className="flex justify-start">
+                      <div className="bg-white border rounded-xl p-4 shadow-sm flex items-center space-x-2">
+                        <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+                        <p className="text-sm text-gray-500">Maya is typing...</p>
+                      </div>
+                    </div>
+                  )}
                   <div ref={messagesEndRef} />
                 </div>
               )}
             </ScrollArea>
             
             {/* Message input */}
-            <form onSubmit={handleSendMessage} className="p-5 border-t bg-white flex gap-4">
+            <form onSubmit={handleSendMessage} className="p-6 border-t bg-white flex gap-4">
               <Input
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type a message..."
-                disabled={isLoading}
-                className="flex-1 h-12 text-sm"
+                disabled={isLoading || isGeneratingImage}
+                className="flex-1 h-14 text-base px-4"
               />
               <Button 
                 type="submit" 
                 size="lg" 
-                disabled={isLoading} 
-                className="px-6"
+                disabled={isLoading || isGeneratingImage} 
+                className="px-8 h-14 text-base"
               >
-                <Send className="h-5 w-5 mr-2" />
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                ) : (
+                  <Send className="h-5 w-5 mr-2" />
+                )}
                 Send
               </Button>
             </form>

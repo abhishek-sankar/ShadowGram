@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   username: string;
@@ -61,6 +62,7 @@ export interface Message {
   content: string;
   createdAt: string;
   isRead: boolean;
+  image?: string;  // Added to support images in messages
 }
 
 export interface Conversation {
