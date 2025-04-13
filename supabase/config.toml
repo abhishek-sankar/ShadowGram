@@ -3,3 +3,12 @@ project_id = "daeljnzfaslarflfxeqj"
 
 [functions.generate-ai-content]
 verify_jwt = false
+
+[functions.generate-profile-image]
+verify_jwt = false
+
+[functions.generate-image]
+verify_jwt = false
+
+[functions.generate-caption]
+verify_jwt = false

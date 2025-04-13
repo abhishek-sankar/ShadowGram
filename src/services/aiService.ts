@@ -130,11 +130,25 @@ export const addAICommentToPost = async (postId: string): Promise<Comment> => {
  * Marks a user as harmful and creates an AI bubble around them
  */
 export const markUserAsHarmful = async (userId: string): Promise<void> => {
-  // First mark the user as harmful in the database
+  // First get the user details to ensure we have the username
+  const { data: userData, error: fetchError } = await supabase
+    .from('users')
+    .select('username, profile_image')
+    .eq('id', userId)
+    .single();
+  
+  if (fetchError) {
+    console.error('Error fetching user data:', fetchError);
+    throw fetchError;
+  }
+  
+  // Now mark the user as harmful in the database
   const { error: updateError } = await supabase
     .from('users')
     .upsert({ 
       id: userId, 
+      username: userData.username,
+      profile_image: userData.profile_image,
       is_harmful: true 
     }, { 
       onConflict: 'id',
@@ -182,3 +196,4 @@ export const isHarmfulUser = async (userId: string): Promise<boolean> => {
   
   return data?.is_harmful || false;
 };
+

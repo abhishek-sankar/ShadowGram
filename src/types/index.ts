@@ -30,3 +30,9 @@ export interface Post {
 }
 
 export type FeedType = 'regular' | 'shadowbanned';
+
+export interface AIGenerationOptions {
+  profileType?: 'realistic' | 'stylized';
+  contentType?: 'travel' | 'food' | 'fitness' | 'technology' | 'art';
+  imageStyle?: 'photo' | 'illustration' | 'mixed';
+}
