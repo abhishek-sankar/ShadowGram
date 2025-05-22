@@ -71,7 +71,7 @@ export const Sidebar: React.FC = () => {
             className="h-8 w-8 rounded-full object-cover mr-2" 
           />
           <div className="hidden md:block">
-            <p className="text-sm font-medium">{Abhishek Sankar}</p>
+            <p className="text-sm font-medium">{currentUser.name}</p>
           </div>
         </div>
       </div>
