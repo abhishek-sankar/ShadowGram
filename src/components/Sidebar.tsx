@@ -44,7 +44,7 @@ export const Sidebar: React.FC = () => {
               <span className="hidden md:inline">Messages</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[85%] sm:w-[600px] p-0">
+          <SheetContent side="left" className="w-[85%] sm:max-w-lg sm:w-[600px] p-0">
             <div className="h-full p-4">
               <h2 className="text-lg font-semibold mb-4">Direct Messages</h2>
               <DirectMessages />
@@ -71,7 +71,7 @@ export const Sidebar: React.FC = () => {
             className="h-8 w-8 rounded-full object-cover mr-2" 
           />
           <div className="hidden md:block">
-            <p className="text-sm font-medium">{currentUser.username}</p>
+            <p className="text-sm font-medium">{Abhishek Sankar}</p>
           </div>
         </div>
       </div>
